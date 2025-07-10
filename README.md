@@ -31,6 +31,147 @@
 $ yarn install
 ```
 
+### 🎯 **Objetivo**
+
+Criar uma API com NestJS e MongoDB para gerenciar uma **plataforma de cursos**, onde você poderá:
+
+- Cadastrar usuários (com email único)
+- Criar cursos compostos por módulos e aulas
+- Matricular usuários nos cursos
+- Buscar dados com filtros, paginação e agregações
+- Simular um relacionamento entre coleções (joins via `$lookup`)
+- Aplicar validações, índices e boas práticas
+
+---
+
+## 🧱 **Modelagem esperada**
+
+### 👤 `User`
+
+```tsx
+{
+  _id: ObjectId,
+  name: string,
+  email: string (único),
+  role: 'student' | 'admin',
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 📚 `Course`
+
+```tsx
+{
+  _id: ObjectId,
+  title: string,
+  description: string,
+  modules: [ObjectId], // referência a Module
+  active: boolean,
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### 🧩 `Module`
+
+```tsx
+{
+  _id: ObjectId,
+  courseId: ObjectId,
+  title: string,
+  lessons: [ObjectId], // referência a Lesson
+}
+```
+
+### 🎥 `Lesson`
+
+```tsx
+{
+  _id: ObjectId,
+  title: string,
+  content: string,
+  duration: number (minutos)
+}
+```
+
+### 📝 `Enrollment`
+
+```tsx
+{
+  _id: ObjectId,
+  userId: ObjectId,
+  courseId: ObjectId,
+  enrolledAt: Date
+}
+```
+
+## 🔧 **Requisitos técnicos do desafio**
+
+### ✅ CRUD completo com NestJS + Mongoose:
+
+- Usuários
+- Cursos
+- Módulos e aulas
+- Matrículas
+
+### ✅ Funcionalidades obrigatórias:
+
+- ✅ Criar usuários com email único
+- ✅ Listar todos os cursos ativos com paginação (`limit + skip`)
+- ✅ Buscar aulas de um módulo
+- ✅ Buscar cursos com filtros (`active`, `title`)
+- ✅ Matricular um usuário em um curso (via `Enrollment`)
+- ✅ Exibir lista de alunos matriculados em um curso (usando `$lookup`)
+
+---
+
+## 🚀 Funcionalidades bônus (nível avançado)
+
+### 🧠 Se quiser ir além:
+
+- ✅ Criar índice composto: `userId + courseId` único em `Enrollment`
+- ✅ Validar criação de `Enrollment` (usuário não pode se matricular 2x no mesmo curso)
+- ✅ Endpoint para retornar todos os cursos que um usuário está matriculado
+- ✅ Endpoint que retorna o número total de alunos por curso
+- ✅ Endpoint que busca os cursos com mais alunos (ranking)
+
+---
+
+## ✅ Tecnologias esperadas
+
+- NestJS com `@nestjs/mongoose`
+- MongoDB local ou Docker
+- Swagger para documentação
+- Validação com `class-validator`
+- Testes (pelo menos 1 unitário + 1 de integração)
+- Uso de DTOs, services, controllers, módulos
+
+---
+
+## 📂 Estrutura de pastas sugerida
+
+```bash
+src/
+│
+├── users/
+├── courses/
+├── modules/
+├── lessons/
+├── enrollments/
+└── common/
+    └── schemas/
+```
+
+---
+
+## 🧪 Testes esperados
+
+- [ ]  ✅ Teste unitário de criação de curso
+- [ ]  ✅ Teste de integração para rota de matrícula
+- [ ]  ✅ Teste de rejeição ao tentar cadastrar email duplicado
+
+
 ## Compile and run the project
 
 ```bash
