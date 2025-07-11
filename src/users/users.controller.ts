@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { User } from './entities/user.entity';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
@@ -14,9 +15,24 @@ export class UsersController {
     return await this.usersService.create(createUserDto);
   }
 
-  @Get()
-  async findAll(): Promise<User[]> {
-    return await this.usersService.findAll();
+  @Get('cursor')
+  @ApiQuery({
+    name: 'cursor',
+    required: false,
+    description: 'set id of user',
+  })
+  @ApiQuery({
+    name: 'name',
+    required: false,
+    description: 'name of user',
+    example: 'John Doe',
+  })
+  async findAllCursor(
+    @Query('name') name?: string,
+    @Query('cursor') cursor?: string,
+    @Query('limit') limit = 15,
+  ): Promise<{ data: User[]; nextCursor: string | null; count: number }> {
+    return await this.usersService.findAll(name, cursor, Number(limit));
   }
 
   @Get(':id')

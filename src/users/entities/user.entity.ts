@@ -27,6 +27,14 @@ export class User {
   @Prop({ required: false })
   updatedAt: Date;
 
+  constructor(name: string, email: string, password: string, age?: number, active?: boolean) {
+    if (typeof active !== 'undefined') this.active = active;
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    if (typeof age !== 'undefined') this.age = age;
+  }
+
   setIsActive(status: boolean): void {
     if (this.active === status) {
       const statusText = status ? 'active' : 'inactive';

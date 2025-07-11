@@ -9,17 +9,33 @@ import { User, UserDocument } from './entities/user.entity';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const userAlreadyExists = await this.userModel.findOne({ email: createUserDto.email });
+  async create({ age, email, name, password }: CreateUserDto): Promise<User> {
+    const userAlreadyExists = await this.userModel.findOne({ email });
 
     if (userAlreadyExists) throw new BadRequestException('Email already exists');
 
-    const createdUser = new this.userModel(createUserDto);
+    const user = new User(name, email, password, age);
+
+    const createdUser = new this.userModel(user);
     return await createdUser.save();
   }
 
-  async findAll(): Promise<User[]> {
-    return await this.userModel.find().exec();
+  async findAll(
+    name?: string,
+    cursor?: string,
+    limit = 10,
+  ): Promise<{ data: User[]; nextCursor: string | null; count: number }> {
+    const query: Record<string, unknown> = {};
+
+    if (name) query.name = { $regex: name, $options: 'i' }; // Busca parcial, case-insensitive
+
+    if (cursor) query._id = { ...(query._id || {}), $gt: cursor };
+
+    const data = await this.userModel.find(query).sort({ _id: 1 }).limit(limit).exec();
+    const count = data.length;
+    const nextCursor: string | null = count === limit ? String(data[data.length - 1]._id) : null;
+
+    return { data, nextCursor, count };
   }
 
   async findOne(id: string): Promise<User> {
