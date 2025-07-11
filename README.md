@@ -52,10 +52,21 @@ Criar uma API com NestJS e MongoDB para gerenciar uma **plataforma de cursos**, 
 {
   _id: ObjectId,
   name: string,
+  active: boolean
   email: string (único),
   role: 'student' | 'admin',
   createdAt: Date,
   updatedAt: Date
+}
+```
+
+### `Role`
+
+```tsx
+{
+  _id: Object,
+  name: string,
+  description: string
 }
 ```
 
